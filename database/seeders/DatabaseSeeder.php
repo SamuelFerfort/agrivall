@@ -15,6 +15,11 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Si ya hay datos no volvemos a sembrar (el seed corre en cada deploy).
+        if (User::where('email', 'admin@agrivall.com')->exists()) {
+            return;
+        }
+
         User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@agrivall.com',
@@ -44,8 +49,8 @@ class DatabaseSeeder extends Seeder
             'tlf_cliente' => '612345678',
             'email_cliente' => 'maria.garcia@email.com',
             'direccion_envio' => 'Calle Mayor 15, 46001 Valencia',
-            'metodo_pago' => 'tarjeta',
-            'estado' => 'enviado',
+            'metodo_pago' => 'transferencia',
+            'estado' => 'reparto',
             'precio_pedido' => 26.40,
         ]);
         $pedido1->productos()->attach(1, ['cantidad' => 2, 'formato' => '1L botella', 'precio_unitario' => 12.50]);
@@ -57,62 +62,80 @@ class DatabaseSeeder extends Seeder
             'tlf_cliente' => '698765432',
             'email_cliente' => 'juan.martinez@email.com',
             'direccion_envio' => 'Avda. del Puerto 42, 46023 Valencia',
-            'metodo_pago' => 'transferencia',
-            'estado' => 'pendiente',
+            'metodo_pago' => 'bizum',
+            'estado' => 'iniciado',
             'precio_pedido' => 63.00,
         ]);
         $pedido2->productos()->attach(2, ['cantidad' => 1, 'formato' => '5L garrafa', 'precio_unitario' => 45.00]);
         $pedido2->productos()->attach(5, ['cantidad' => 2, 'formato' => '250g bolsa', 'precio_unitario' => 6.75]);
 
-        $tipoNoticias = TipoPost::create(['tipo' => 'Noticias']);
-        $tipoEventos = TipoPost::create(['tipo' => 'Eventos']);
-        $tipoRecetas = TipoPost::create(['tipo' => 'Recetas']);
+        $tipoCultivos = TipoPost::create(['tipo' => 'Cultivos']);
+        $tipoEcologia = TipoPost::create(['tipo' => 'Ecología']);
+        $tipoCursos = TipoPost::create(['tipo' => 'Cursos']);
 
         PostBlog::create([
             'titulo' => 'Nueva cosecha de aceitunas 2026',
             'noticia' => 'Este año la cosecha de aceitunas ha sido excepcional. Las lluvias de otoño y el clima templado han favorecido una producción de alta calidad. Nuestro aceite de oliva virgen extra de esta temporada tiene un sabor afrutado intenso con notas de almendra verde.',
             'fecha_public' => '2026-01-15',
-            'tipo_post_id' => $tipoNoticias->id,
+            'tipo_post_id' => $tipoCultivos->id,
         ]);
         PostBlog::create([
             'titulo' => 'Jornada de puertas abiertas en la finca',
             'noticia' => 'El próximo sábado 8 de marzo celebramos una jornada de puertas abiertas. Podrás visitar nuestros campos de olivos, la almazara y degustar nuestros productos. Actividades para toda la familia con talleres de elaboración de mermeladas artesanales.',
             'fecha_public' => '2026-02-01',
-            'tipo_post_id' => $tipoEventos->id,
+            'tipo_post_id' => $tipoCursos->id,
         ]);
         PostBlog::create([
             'titulo' => 'Receta: Tosta de queso con miel de romero',
             'noticia' => 'Una receta sencilla y deliciosa: tuesta unas rebanadas de pan de pueblo, añade queso de cabra fresco, un chorrito de nuestra miel de romero y unas almendras Marcona tostadas por encima. El maridaje perfecto con nuestro vino blanco Moscatel.',
             'fecha_public' => '2026-02-10',
-            'tipo_post_id' => $tipoRecetas->id,
+            'tipo_post_id' => $tipoCultivos->id,
         ]);
         PostBlog::create([
             'titulo' => 'Premiados en la Feria Agroalimentaria de Castellón',
             'noticia' => 'Estamos orgullosos de anunciar que nuestro Aceite de Oliva Virgen Extra variedad Arbequina ha sido galardonado con la medalla de oro en la Feria Agroalimentaria de Castellón 2026. Un reconocimiento al trabajo y dedicación de todo el equipo.',
             'fecha_public' => '2026-02-20',
-            'tipo_post_id' => $tipoNoticias->id,
+            'tipo_post_id' => $tipoEcologia->id,
         ]);
 
-        $semanas = [
-            ['anyo' => 2026, 'numero_sem' => 1, 'descriptor' => '29 Dic - 4 Ene', 'precio' => 350.00, 'estado' => 'reservada'],
-            ['anyo' => 2026, 'numero_sem' => 2, 'descriptor' => '5 Ene - 11 Ene', 'precio' => 300.00, 'estado' => 'reservada'],
-            ['anyo' => 2026, 'numero_sem' => 10, 'descriptor' => '2 Mar - 8 Mar', 'precio' => 320.00, 'estado' => 'disponible'],
-            ['anyo' => 2026, 'numero_sem' => 11, 'descriptor' => '9 Mar - 15 Mar', 'precio' => 350.00, 'estado' => 'disponible'],
-            ['anyo' => 2026, 'numero_sem' => 12, 'descriptor' => '16 Mar - 22 Mar', 'precio' => 380.00, 'estado' => 'reservada'],
-            ['anyo' => 2026, 'numero_sem' => 13, 'descriptor' => '23 Mar - 29 Mar', 'precio' => 400.00, 'estado' => 'disponible'],
-            ['anyo' => 2026, 'numero_sem' => 14, 'descriptor' => '30 Mar - 5 Abr', 'precio' => 450.00, 'estado' => 'disponible'],
-            ['anyo' => 2026, 'numero_sem' => 15, 'descriptor' => '6 Abr - 12 Abr', 'precio' => 500.00, 'estado' => 'reservada'],
-            ['anyo' => 2026, 'numero_sem' => 25, 'descriptor' => '15 Jun - 21 Jun', 'precio' => 550.00, 'estado' => 'disponible'],
-            ['anyo' => 2026, 'numero_sem' => 26, 'descriptor' => '22 Jun - 28 Jun', 'precio' => 600.00, 'estado' => 'disponible'],
-            ['anyo' => 2026, 'numero_sem' => 30, 'descriptor' => '20 Jul - 26 Jul', 'precio' => 700.00, 'estado' => 'reservada'],
-            ['anyo' => 2026, 'numero_sem' => 31, 'descriptor' => '27 Jul - 2 Ago', 'precio' => 700.00, 'estado' => 'disponible'],
-            ['anyo' => 2026, 'numero_sem' => 32, 'descriptor' => '3 Ago - 9 Ago', 'precio' => 750.00, 'estado' => 'disponible'],
-            ['anyo' => 2026, 'numero_sem' => 33, 'descriptor' => '10 Ago - 16 Ago', 'precio' => 750.00, 'estado' => 'reservada'],
-            ['anyo' => 2026, 'numero_sem' => 34, 'descriptor' => '17 Ago - 23 Ago', 'precio' => 700.00, 'estado' => 'disponible'],
-        ];
+        // Semanas desde la actual hasta el final del anyo.
+        $meses = [1 => 'Ene', 2 => 'Feb', 3 => 'Mar', 4 => 'Abr', 5 => 'May', 6 => 'Jun',
+                  7 => 'Jul', 8 => 'Ago', 9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dic'];
 
-        foreach ($semanas as $s) {
-            SemanaCasilla::create($s);
+        $cursor = now()->startOfWeek(\Carbon\Carbon::MONDAY); // lunes de la semana actual
+        $anyoActual = (int) now()->year;
+        $i = 0;
+
+        while ((int) $cursor->year <= $anyoActual) {
+            $fin = $cursor->copy()->endOfWeek(\Carbon\Carbon::SUNDAY); // domingo
+
+            // Mezcla de estados de ejemplo.
+            $estado = 'disponible';
+            if ($i % 6 === 2) {
+                $estado = 'reservado';
+            } elseif ($i % 9 === 4) {
+                $estado = 'pre-reserva';
+            } elseif ($i % 13 === 7) {
+                $estado = 'no disponible';
+            }
+
+            // Precio por temporada (0 si no disponible).
+            $precio = in_array($cursor->month, [7, 8]) ? 700
+                : (in_array($cursor->month, [6, 9]) ? 500 : 350);
+            if ($estado === 'no disponible') {
+                $precio = 0;
+            }
+
+            SemanaCasilla::create([
+                'anyo' => (int) $cursor->year,
+                'numero_sem' => (int) $cursor->isoWeek,
+                'descriptor' => $cursor->day . ' ' . $meses[$cursor->month] . ' - ' . $fin->day . ' ' . $meses[$fin->month],
+                'precio' => $precio,
+                'estado' => $estado,
+            ]);
+
+            $cursor->addWeek();
+            $i++;
         }
     }
 }

@@ -28,5 +28,7 @@
                 {{ $slot }}
             </main>
         </div>
+
+        @include('partials.sweetalert')
     </body>
 </html>

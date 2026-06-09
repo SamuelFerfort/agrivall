@@ -90,21 +90,6 @@
             </div>
         </nav>
 
-        @if(session('success'))
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-                <div class="bg-olive-50 border border-olive-300 text-olive-800 px-4 py-3 rounded-lg text-sm">
-                    {{ session('success') }}
-                </div>
-            </div>
-        @endif
-        @if(session('error'))
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-                <div class="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-lg text-sm">
-                    {{ session('error') }}
-                </div>
-            </div>
-        @endif
-
         <main>
             {{ $slot }}
         </main>
@@ -139,5 +124,15 @@
                 </div>
             </div>
         </footer>
+
+        @include('partials.sweetalert')
+        <script>
+            @if(session('success'))
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: @json(session('success')), showConfirmButton: false, timer: 3500, timerProgressBar: true });
+            @endif
+            @if(session('error'))
+                Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: @json(session('error')), showConfirmButton: false, timer: 4500, timerProgressBar: true });
+            @endif
+        </script>
     </body>
 </html>

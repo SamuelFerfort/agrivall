@@ -67,7 +67,7 @@
                                                     Editar
                                                 </a>
                                                 <form action="{{ route('admin.posts.destroy', $post) }}" method="POST"
-                                                      onsubmit="return confirm('Seguro que quieres eliminar este post?')">
+                                                      data-confirm="Seguro que quieres eliminar este post?">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"

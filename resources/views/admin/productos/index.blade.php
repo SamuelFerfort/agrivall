@@ -73,7 +73,7 @@
                                                     Editar
                                                 </a>
                                                 <form action="{{ route('admin.productos.destroy', $producto) }}" method="POST"
-                                                      onsubmit="return confirm('Seguro que quieres eliminar este producto?')">
+                                                      data-confirm="Seguro que quieres eliminar este producto?">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"

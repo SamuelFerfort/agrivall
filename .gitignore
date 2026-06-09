@@ -24,3 +24,6 @@ Homestead.yaml
 Thumbs.db
 /images
 *.pdf
+/.agents
+/.claude
+skills-lock.json

@@ -53,7 +53,7 @@
                                                     Editar
                                                 </a>
                                                 <form action="{{ route('admin.tipo-posts.destroy', $tipoPost) }}" method="POST"
-                                                      onsubmit="return confirm('Seguro que quieres eliminar este tipo de post?')">
+                                                      data-confirm="Seguro que quieres eliminar este tipo de post?">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"

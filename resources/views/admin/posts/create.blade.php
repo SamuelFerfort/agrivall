@@ -34,12 +34,7 @@
                             <x-input-error :messages="$errors->get('tipo_post_id')" class="mt-2" />
                         </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="fecha_public" value="Fecha de Publicacion" />
-                            <x-text-input id="fecha_public" name="fecha_public" type="date" class="mt-1 block w-full"
-                                          :value="old('fecha_public', date('Y-m-d'))" required />
-                            <x-input-error :messages="$errors->get('fecha_public')" class="mt-2" />
-                        </div>
+                        <p class="mb-4 text-sm text-gray-500">La fecha de publicacion se asigna automaticamente al crear la noticia.</p>
 
                         <div class="mb-4">
                             <x-input-label for="noticia" value="Noticia" />

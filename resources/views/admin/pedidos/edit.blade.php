@@ -25,11 +25,10 @@
                             <x-input-label for="estado" value="Estado del Pedido" />
                             <select id="estado" name="estado" required
                                     class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                <option value="pendiente" {{ old('estado', $pedido->estado) === 'pendiente' ? 'selected' : '' }}>Pendiente</option>
-                                <option value="procesando" {{ old('estado', $pedido->estado) === 'procesando' ? 'selected' : '' }}>Procesando</option>
-                                <option value="enviado" {{ old('estado', $pedido->estado) === 'enviado' ? 'selected' : '' }}>Enviado</option>
-                                <option value="entregado" {{ old('estado', $pedido->estado) === 'entregado' ? 'selected' : '' }}>Entregado</option>
-                                <option value="cancelado" {{ old('estado', $pedido->estado) === 'cancelado' ? 'selected' : '' }}>Cancelado</option>
+                                <option value="iniciado" {{ old('estado', $pedido->estado) === 'iniciado' ? 'selected' : '' }}>Iniciado</option>
+                                <option value="en proceso" {{ old('estado', $pedido->estado) === 'en proceso' ? 'selected' : '' }}>En proceso</option>
+                                <option value="reparto" {{ old('estado', $pedido->estado) === 'reparto' ? 'selected' : '' }}>Reparto</option>
+                                <option value="finalizado" {{ old('estado', $pedido->estado) === 'finalizado' ? 'selected' : '' }}>Finalizado</option>
                             </select>
                             <x-input-error :messages="$errors->get('estado')" class="mt-2" />
                         </div>

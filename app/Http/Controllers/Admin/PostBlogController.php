@@ -26,10 +26,12 @@ class PostBlogController extends Controller
         $validated = $request->validate([
             'titulo' => 'required|string|max:255',
             'noticia' => 'required|string',
-            'fecha_public' => 'required|date',
             'tipo_post_id' => 'required|exists:tipo_posts,id',
             'imagen' => 'nullable|image|max:2048',
         ]);
+
+        // La fecha se asigna automaticamente: es la fecha de creacion de la noticia.
+        $validated['fecha_public'] = now();
 
         if ($request->hasFile('imagen')) {
             $file = $request->file('imagen');

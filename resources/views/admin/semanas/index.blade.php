@@ -50,10 +50,20 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b">{{ $semana->anyo }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b">{{ $semana->numero_sem }}</td>
                                         <td class="px-6 py-4 text-sm text-gray-900 border-b">{{ $semana->descriptor }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b">{{ number_format($semana->precio, 2) }} &euro;</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b">
+                                            {{ $semana->estado === 'no disponible' ? '-' : number_format($semana->precio, 2) . ' €' }}
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm border-b">
-                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                                                {{ $semana->estado === 'disponible' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                            @php
+                                                $semanaColors = [
+                                                    'disponible' => 'bg-green-100 text-green-800',
+                                                    'pre-reserva' => 'bg-amber-100 text-amber-800',
+                                                    'reservado' => 'bg-red-100 text-red-800',
+                                                    'no disponible' => 'bg-gray-100 text-gray-800',
+                                                ];
+                                                $semanaColor = $semanaColors[$semana->estado] ?? 'bg-gray-100 text-gray-800';
+                                            @endphp
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $semanaColor }}">
                                                 {{ ucfirst($semana->estado) }}
                                             </span>
                                         </td>
@@ -64,7 +74,7 @@
                                                     Editar
                                                 </a>
                                                 <form action="{{ route('admin.semanas.destroy', $semana) }}" method="POST"
-                                                      onsubmit="return confirm('Seguro que quieres eliminar esta semana?')">
+                                                      data-confirm="Seguro que quieres eliminar esta semana?">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"

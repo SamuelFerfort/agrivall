@@ -50,11 +50,10 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm border-b">
                                             @php
                                                 $estadoColors = [
-                                                    'pendiente' => 'bg-yellow-100 text-yellow-800',
-                                                    'procesando' => 'bg-blue-100 text-blue-800',
-                                                    'enviado' => 'bg-indigo-100 text-indigo-800',
-                                                    'entregado' => 'bg-green-100 text-green-800',
-                                                    'cancelado' => 'bg-red-100 text-red-800',
+                                                    'iniciado' => 'bg-yellow-100 text-yellow-800',
+                                                    'en proceso' => 'bg-blue-100 text-blue-800',
+                                                    'reparto' => 'bg-indigo-100 text-indigo-800',
+                                                    'finalizado' => 'bg-green-100 text-green-800',
                                                 ];
                                                 $color = $estadoColors[$pedido->estado] ?? 'bg-gray-100 text-gray-800';
                                             @endphp
@@ -73,7 +72,7 @@
                                                     Estado
                                                 </a>
                                                 <form action="{{ route('admin.pedidos.destroy', $pedido) }}" method="POST"
-                                                      onsubmit="return confirm('Seguro que quieres eliminar este pedido?')">
+                                                      data-confirm="Seguro que quieres eliminar este pedido?">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"

@@ -48,8 +48,9 @@
                                     class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                 <option value="">-- Seleccionar estado --</option>
                                 <option value="disponible" {{ old('estado', $semana->estado) === 'disponible' ? 'selected' : '' }}>Disponible</option>
-                                <option value="reservada" {{ old('estado', $semana->estado) === 'reservada' ? 'selected' : '' }}>Reservada</option>
-                                <option value="cerrada" {{ old('estado', $semana->estado) === 'cerrada' ? 'selected' : '' }}>Cerrada</option>
+                                <option value="pre-reserva" {{ old('estado', $semana->estado) === 'pre-reserva' ? 'selected' : '' }}>Pre-reserva</option>
+                                <option value="reservado" {{ old('estado', $semana->estado) === 'reservado' ? 'selected' : '' }}>Reservado</option>
+                                <option value="no disponible" {{ old('estado', $semana->estado) === 'no disponible' ? 'selected' : '' }}>No disponible</option>
                             </select>
                             <x-input-error :messages="$errors->get('estado')" class="mt-2" />
                         </div>

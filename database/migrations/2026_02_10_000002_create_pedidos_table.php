@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('email_cliente');
             $table->string('direccion_envio');
             $table->string('metodo_pago');
-            $table->string('estado')->default('pendiente');
+            $table->string('estado')->default('iniciado');
             $table->decimal('precio_pedido', 10, 2);
             $table->timestamps();
         });
