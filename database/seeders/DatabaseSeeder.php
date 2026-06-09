@@ -77,24 +77,28 @@ class DatabaseSeeder extends Seeder
             'titulo' => 'Nueva cosecha de aceitunas 2026',
             'noticia' => 'Este año la cosecha de aceitunas ha sido excepcional. Las lluvias de otoño y el clima templado han favorecido una producción de alta calidad. Nuestro aceite de oliva virgen extra de esta temporada tiene un sabor afrutado intenso con notas de almendra verde.',
             'fecha_public' => '2026-01-15',
+            'imagen' => '198915550.jpg',
             'tipo_post_id' => $tipoCultivos->id,
         ]);
         PostBlog::create([
             'titulo' => 'Jornada de puertas abiertas en la finca',
             'noticia' => 'El próximo sábado 8 de marzo celebramos una jornada de puertas abiertas. Podrás visitar nuestros campos de olivos, la almazara y degustar nuestros productos. Actividades para toda la familia con talleres de elaboración de mermeladas artesanales.',
             'fecha_public' => '2026-02-01',
+            'imagen' => 'fachada.jpg',
             'tipo_post_id' => $tipoCursos->id,
         ]);
         PostBlog::create([
             'titulo' => 'Receta: Tosta de queso con miel de romero',
             'noticia' => 'Una receta sencilla y deliciosa: tuesta unas rebanadas de pan de pueblo, añade queso de cabra fresco, un chorrito de nuestra miel de romero y unas almendras Marcona tostadas por encima. El maridaje perfecto con nuestro vino blanco Moscatel.',
             'fecha_public' => '2026-02-10',
+            'imagen' => 'productos/miel-romero.jpg',
             'tipo_post_id' => $tipoCultivos->id,
         ]);
         PostBlog::create([
             'titulo' => 'Premiados en la Feria Agroalimentaria de Castellón',
             'noticia' => 'Estamos orgullosos de anunciar que nuestro Aceite de Oliva Virgen Extra variedad Arbequina ha sido galardonado con la medalla de oro en la Feria Agroalimentaria de Castellón 2026. Un reconocimiento al trabajo y dedicación de todo el equipo.',
             'fecha_public' => '2026-02-20',
+            'imagen' => 'productos/aceite-oliva.jpg',
             'tipo_post_id' => $tipoEcologia->id,
         ]);
 
