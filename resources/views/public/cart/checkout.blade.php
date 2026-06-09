@@ -57,13 +57,13 @@
                             <select name="metodo_pago" id="metodo_pago" required
                                 class="w-full border border-stone-300 rounded-lg px-4 py-2.5 focus:ring-olive-500 focus:border-olive-500 transition bg-white">
                                 <option value="" disabled {{ old('metodo_pago') ? '' : 'selected' }}>Selecciona un metodo de pago</option>
-                                <option value="tarjeta" {{ old('metodo_pago') == 'tarjeta' ? 'selected' : '' }}>Tarjeta de credito/debito</option>
                                 <option value="transferencia" {{ old('metodo_pago') == 'transferencia' ? 'selected' : '' }}>Transferencia bancaria</option>
-                                <option value="contra reembolso" {{ old('metodo_pago') == 'contra reembolso' ? 'selected' : '' }}>Contra reembolso</option>
+                                <option value="bizum" {{ old('metodo_pago') == 'bizum' ? 'selected' : '' }}>Bizum</option>
                             </select>
                             @error('metodo_pago')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
+                            <p class="mt-2 text-xs text-stone-500">No se realiza ningun cobro online. Al confirmar el pedido recibiras por correo los datos para pagar por transferencia o Bizum.</p>
                         </div>
                     </div>
                 </div>

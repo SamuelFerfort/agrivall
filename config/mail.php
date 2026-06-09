@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Notification Address
+    |--------------------------------------------------------------------------
+    |
+    | Direccion del administrador del sitio que recibe los avisos de nuevos
+    | pedidos y solicitudes de reserva de la casa rural.
+    |
+    */
+
+    'admin_address' => env('MAIL_ADMIN_ADDRESS', 'info@agrivall.com'),
+
 ];

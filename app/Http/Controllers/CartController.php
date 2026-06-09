@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use App\Models\Producto;
 use App\Models\Pedido;
+use App\Mail\PedidoConfirmado;
+use App\Mail\PedidoNotificacionAdmin;
 
 class CartController extends Controller
 {
@@ -88,7 +92,7 @@ class CartController extends Controller
             'tlf_cliente' => 'required|string|max:20',
             'email_cliente' => 'required|email|max:255',
             'direccion_envio' => 'required|string|max:500',
-            'metodo_pago' => 'required|in:tarjeta,transferencia,contra reembolso',
+            'metodo_pago' => 'required|in:transferencia,bizum',
         ]);
 
         $cart = session()->get('cart', []);
@@ -109,7 +113,7 @@ class CartController extends Controller
             'email_cliente' => $request->email_cliente,
             'direccion_envio' => $request->direccion_envio,
             'metodo_pago' => $request->metodo_pago,
-            'estado' => 'pendiente',
+            'estado' => 'iniciado',
             'precio_pedido' => $total,
         ]);
 
@@ -123,6 +127,15 @@ class CartController extends Controller
 
         session()->forget('cart');
 
-        return redirect()->route('home')->with('success', 'Pedido realizado correctamente. Gracias por tu compra.');
+        // Email de confirmacion al cliente y aviso al admin.
+        try {
+            $pedido->load('productos');
+            Mail::to($pedido->email_cliente)->send(new PedidoConfirmado($pedido));
+            Mail::to(config('mail.admin_address'))->send(new PedidoNotificacionAdmin($pedido));
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo enviar el correo del pedido #'.$pedido->id.': '.$e->getMessage());
+        }
+
+        return redirect()->route('home')->with('success', 'Pedido realizado correctamente. Te hemos enviado un correo de confirmacion. Gracias por tu compra.');
     }
 }

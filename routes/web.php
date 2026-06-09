@@ -19,6 +19,7 @@ Route::get('/productos/{producto}', [PublicProductoController::class, 'show'])->
 Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{post}', [PublicBlogController::class, 'show'])->name('blog.show');
 Route::get('/casa-rural', [PublicCasaRuralController::class, 'index'])->name('casa-rural.index');
+Route::post('/casa-rural/reservar', [PublicCasaRuralController::class, 'reservar'])->name('casa-rural.reservar');
 
 Route::get('/carrito', [CartController::class, 'index'])->name('cart.index');
 Route::post('/carrito/add/{producto}', [CartController::class, 'add'])->name('cart.add');

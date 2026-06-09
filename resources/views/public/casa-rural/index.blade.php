@@ -101,14 +101,22 @@
             <div class="text-center mb-10">
                 <h2 class="text-3xl font-bold text-stone-800 mb-4">Disponibilidad semanal</h2>
                 <p class="text-stone-600">Consulta las semanas disponibles y sus precios. Las reservas son semanales.</p>
-                <div class="flex items-center justify-center gap-6 mt-4">
+                <div class="flex items-center justify-center flex-wrap gap-x-6 gap-y-2 mt-4">
                     <div class="flex items-center gap-2">
                         <span class="inline-block w-4 h-4 rounded bg-olive-500"></span>
                         <span class="text-sm text-stone-600">Disponible</span>
                     </div>
                     <div class="flex items-center gap-2">
+                        <span class="inline-block w-4 h-4 rounded bg-amber-500"></span>
+                        <span class="text-sm text-stone-600">Pre-reserva</span>
+                    </div>
+                    <div class="flex items-center gap-2">
                         <span class="inline-block w-4 h-4 rounded bg-red-500"></span>
-                        <span class="text-sm text-stone-600">Reservada</span>
+                        <span class="text-sm text-stone-600">Reservado</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block w-4 h-4 rounded bg-stone-400"></span>
+                        <span class="text-sm text-stone-600">No disponible</span>
                     </div>
                 </div>
             </div>
@@ -133,6 +141,15 @@
                                 </thead>
                                 <tbody>
                                     @foreach($semanasAnyo as $semana)
+                                        @php
+                                            $estadosInfo = [
+                                                'disponible'    => ['badge' => 'bg-olive-100 text-olive-800', 'dot' => 'bg-olive-500', 'label' => 'Disponible'],
+                                                'pre-reserva'   => ['badge' => 'bg-amber-100 text-amber-800', 'dot' => 'bg-amber-500', 'label' => 'Pre-reserva'],
+                                                'reservado'     => ['badge' => 'bg-red-100 text-red-800', 'dot' => 'bg-red-500', 'label' => 'Reservado'],
+                                                'no disponible' => ['badge' => 'bg-stone-100 text-stone-600', 'dot' => 'bg-stone-400', 'label' => 'No disponible'],
+                                            ];
+                                            $info = $estadosInfo[$semana->estado] ?? $estadosInfo['no disponible'];
+                                        @endphp
                                         <tr class="hover:bg-stone-50 transition {{ $semana->estado === 'disponible' ? '' : 'opacity-75' }}">
                                             <td class="px-4 py-3 border-b border-stone-100">
                                                 <span class="font-medium text-stone-800">Semana {{ $semana->numero_sem }}</span>
@@ -141,20 +158,15 @@
                                                 {{ $semana->descriptor ?? '-' }}
                                             </td>
                                             <td class="px-4 py-3 border-b border-stone-100 text-right">
-                                                <span class="font-semibold text-stone-800">{{ number_format($semana->precio, 2, ',', '.') }} &euro;</span>
+                                                <span class="font-semibold text-stone-800">
+                                                    {{ $semana->estado === 'no disponible' ? '-' : number_format($semana->precio, 2, ',', '.') . ' €' }}
+                                                </span>
                                             </td>
                                             <td class="px-4 py-3 border-b border-stone-100 text-center">
-                                                @if($semana->estado === 'disponible')
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-olive-100 text-olive-800">
-                                                        <span class="w-2 h-2 rounded-full bg-olive-500 mr-1.5"></span>
-                                                        Disponible
-                                                    </span>
-                                                @else
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                        <span class="w-2 h-2 rounded-full bg-red-500 mr-1.5"></span>
-                                                        Reservada
-                                                    </span>
-                                                @endif
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $info['badge'] }}">
+                                                    <span class="w-2 h-2 rounded-full {{ $info['dot'] }} mr-1.5"></span>
+                                                    {{ $info['label'] }}
+                                                </span>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -173,17 +185,72 @@
                 </div>
             @endif
 
-            <div class="mt-12 bg-olive-50 rounded-xl p-8 text-center border border-olive-100">
-                <h3 class="text-xl font-bold text-stone-800 mb-2">Quieres reservar?</h3>
-                <p class="text-stone-600 mb-4">Contacta con nosotros para hacer tu reserva o resolver cualquier duda.</p>
-                <div class="flex flex-wrap justify-center gap-4">
-                    <a href="mailto:info@agrivall.com" class="inline-block bg-olive-700 hover:bg-olive-800 text-white font-semibold py-3 px-8 rounded-lg transition duration-200">
-                        Contactar por email
-                    </a>
-                    <a href="tel:+34612345678" class="inline-block border-2 border-olive-700 text-olive-700 hover:bg-olive-700 hover:text-white font-semibold py-3 px-8 rounded-lg transition duration-200">
-                        Llamar: +34 612 345 678
-                    </a>
-                </div>
+            <div id="reservar" class="mt-12 bg-olive-50 rounded-xl p-6 md:p-8 border border-olive-100">
+                <h3 class="text-2xl font-bold text-stone-800 mb-2 text-center">Solicita tu reserva</h3>
+                <p class="text-stone-600 mb-6 text-center max-w-2xl mx-auto">Elige una semana disponible, dejanos tus datos y cualquier observacion. La semana quedara pre-reservada mientras gestionamos tu solicitud y nos pondremos en contacto contigo.</p>
+
+                @php $semanasDisponibles = $semanas->where('estado', 'disponible'); @endphp
+
+                @if ($errors->any())
+                    <div class="max-w-2xl mx-auto mb-6 bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded-lg text-sm">
+                        <ul class="list-disc list-inside space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @if ($semanasDisponibles->isEmpty())
+                    <p class="text-center text-stone-500">Ahora mismo no hay semanas disponibles. Vuelve a consultar mas adelante.</p>
+                @else
+                    <form action="{{ route('casa-rural.reservar') }}" method="POST" class="max-w-2xl mx-auto">
+                        @csrf
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div class="sm:col-span-2">
+                                <label for="semana_id" class="block text-sm font-medium text-stone-700 mb-1">Semana *</label>
+                                <select name="semana_id" id="semana_id" required
+                                    class="w-full border border-stone-300 rounded-lg px-4 py-2.5 bg-white focus:ring-olive-500 focus:border-olive-500 transition">
+                                    <option value="" disabled {{ old('semana_id') ? '' : 'selected' }}>Selecciona una semana disponible</option>
+                                    @foreach ($semanasDisponibles as $sem)
+                                        <option value="{{ $sem->id }}" {{ old('semana_id') == $sem->id ? 'selected' : '' }}>
+                                            Semana {{ $sem->numero_sem }} ({{ $sem->descriptor }}) - {{ number_format($sem->precio, 2, ',', '.') }} €
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label for="nombre" class="block text-sm font-medium text-stone-700 mb-1">Nombre completo *</label>
+                                <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}" required
+                                    class="w-full border border-stone-300 rounded-lg px-4 py-2.5 focus:ring-olive-500 focus:border-olive-500 transition" placeholder="Tu nombre">
+                            </div>
+                            <div>
+                                <label for="tlf" class="block text-sm font-medium text-stone-700 mb-1">Telefono</label>
+                                <input type="tel" name="tlf" id="tlf" value="{{ old('tlf') }}"
+                                    class="w-full border border-stone-300 rounded-lg px-4 py-2.5 focus:ring-olive-500 focus:border-olive-500 transition" placeholder="612 345 678">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="email" class="block text-sm font-medium text-stone-700 mb-1">Email *</label>
+                                <input type="email" name="email" id="email" value="{{ old('email') }}" required
+                                    class="w-full border border-stone-300 rounded-lg px-4 py-2.5 focus:ring-olive-500 focus:border-olive-500 transition" placeholder="tu@email.com">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="observaciones" class="block text-sm font-medium text-stone-700 mb-1">Observaciones</label>
+                                <textarea name="observaciones" id="observaciones" rows="3"
+                                    class="w-full border border-stone-300 rounded-lg px-4 py-2.5 focus:ring-olive-500 focus:border-olive-500 transition" placeholder="Numero de personas, fechas de interes, dudas...">{{ old('observaciones') }}</textarea>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-center">
+                            <button type="submit" class="inline-block bg-olive-700 hover:bg-olive-800 text-white font-semibold py-3 px-10 rounded-lg transition duration-200">
+                                Solicitar reserva
+                            </button>
+                        </div>
+                    </form>
+                @endif
+
+                <p class="text-center text-stone-500 text-sm mt-6">
+                    Tambien puedes escribirnos a <a href="mailto:info@agrivall.com" class="text-olive-700 font-medium hover:underline">info@agrivall.com</a> o llamar al <a href="tel:+34612345678" class="text-olive-700 font-medium hover:underline">+34 612 345 678</a>.
+                </p>
             </div>
         </div>
     </section>
