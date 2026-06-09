@@ -63,7 +63,7 @@
                 </div>
 
                 @if($producto->disponible)
-                    <form action="{{ route('cart.add', $producto) }}" method="POST" class="bg-stone-50 rounded-xl p-6 border border-stone-200">
+                    <form action="{{ route('cart.add', $producto) }}" method="POST" class="bg-stone-50 rounded-xl p-6 border border-stone-200" data-cart-add>
                         @csrf
                         <div class="mb-4">
                             <label for="cantidad" class="block text-sm font-medium text-stone-700 mb-2">Cantidad</label>

@@ -22,7 +22,7 @@
                             @php $total = 0; @endphp
                             @foreach($cart as $id => $item)
                                 @php $subtotal = $item['precio'] * $item['cantidad']; $total += $subtotal; @endphp
-                                <tr class="border-b border-stone-100 hover:bg-stone-50 transition">
+                                <tr class="border-b border-stone-100 hover:bg-stone-50 transition" data-cart-row="{{ $id }}">
                                     <td class="px-6 py-4">
                                         <a href="{{ route('productos.show', $id) }}" class="font-medium text-stone-800 hover:text-olive-700">
                                             {{ $item['nombre'] }}
@@ -32,30 +32,25 @@
                                         {{ $item['formato'] }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        <form action="{{ route('cart.update', $id) }}" method="POST" class="flex items-center justify-center">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="number" name="cantidad" value="{{ $item['cantidad'] }}" min="1" max="99"
-                                                class="w-16 text-center border border-stone-300 rounded-lg py-1 focus:ring-olive-500 focus:border-olive-500 text-sm"
-                                                onchange="this.form.submit()">
-                                        </form>
+                                        <div class="flex items-center justify-center">
+                                            <input type="number" value="{{ $item['cantidad'] }}" min="1" max="99"
+                                                data-cart-qty data-update-url="{{ route('cart.update', $id) }}" data-id="{{ $id }}"
+                                                class="w-16 text-center border border-stone-300 rounded-lg py-1 focus:ring-olive-500 focus:border-olive-500 text-sm">
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 text-right text-stone-600">
                                         {{ number_format($item['precio'], 2, ',', '.') }} &euro;
                                     </td>
-                                    <td class="px-6 py-4 text-right font-semibold text-stone-800">
+                                    <td class="px-6 py-4 text-right font-semibold text-stone-800" data-subtotal="{{ $id }}">
                                         {{ number_format($subtotal, 2, ',', '.') }} &euro;
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <form action="{{ route('cart.remove', $id) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-700 transition" title="Eliminar">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                        </form>
+                                        <button type="button" data-cart-remove data-remove-url="{{ route('cart.remove', $id) }}" data-id="{{ $id }}"
+                                            class="text-red-500 hover:text-red-700 transition" title="Eliminar">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -67,7 +62,7 @@
                     @php $total = 0; @endphp
                     @foreach($cart as $id => $item)
                         @php $subtotal = $item['precio'] * $item['cantidad']; $total += $subtotal; @endphp
-                        <div class="p-4">
+                        <div class="p-4" data-cart-row="{{ $id }}">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
                                     <a href="{{ route('productos.show', $id) }}" class="font-medium text-stone-800 hover:text-olive-700">
@@ -75,26 +70,21 @@
                                     </a>
                                     <p class="text-sm text-stone-500">{{ $item['formato'] }}</p>
                                 </div>
-                                <form action="{{ route('cart.remove', $id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:text-red-700">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </form>
+                                <button type="button" data-cart-remove data-remove-url="{{ route('cart.remove', $id) }}" data-id="{{ $id }}"
+                                    class="text-red-500 hover:text-red-700">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
                             </div>
                             <div class="flex justify-between items-center">
-                                <form action="{{ route('cart.update', $id) }}" method="POST" class="flex items-center gap-2">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="number" name="cantidad" value="{{ $item['cantidad'] }}" min="1" max="99"
-                                        class="w-16 text-center border border-stone-300 rounded-lg py-1 text-sm"
-                                        onchange="this.form.submit()">
+                                <div class="flex items-center gap-2">
+                                    <input type="number" value="{{ $item['cantidad'] }}" min="1" max="99"
+                                        data-cart-qty data-update-url="{{ route('cart.update', $id) }}" data-id="{{ $id }}"
+                                        class="w-16 text-center border border-stone-300 rounded-lg py-1 text-sm">
                                     <span class="text-sm text-stone-500">x {{ number_format($item['precio'], 2, ',', '.') }} &euro;</span>
-                                </form>
-                                <span class="font-semibold text-stone-800">{{ number_format($subtotal, 2, ',', '.') }} &euro;</span>
+                                </div>
+                                <span class="font-semibold text-stone-800" data-subtotal="{{ $id }}">{{ number_format($subtotal, 2, ',', '.') }} &euro;</span>
                             </div>
                         </div>
                     @endforeach
@@ -109,7 +99,7 @@
                 <div class="bg-stone-50 px-6 py-5 border-t border-stone-200">
                     <div class="flex items-center justify-between">
                         <span class="text-lg font-semibold text-stone-700">Total</span>
-                        <span class="text-2xl font-bold text-olive-700">{{ number_format($total, 2, ',', '.') }} &euro;</span>
+                        <span class="text-2xl font-bold text-olive-700" data-cart-total>{{ number_format($total, 2, ',', '.') }} &euro;</span>
                     </div>
                 </div>
             </div>

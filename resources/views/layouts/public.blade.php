@@ -40,11 +40,7 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
                             </svg>
-                            @if(session('cart') && count(session('cart')) > 0)
-                                <span class="absolute -top-1 -right-1 bg-earth-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                                    {{ count(session('cart')) }}
-                                </span>
-                            @endif
+                            <span class="js-cart-count absolute -top-1 -right-1 bg-earth-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center {{ (session('cart') && count(session('cart')) > 0) ? '' : 'hidden' }}">{{ count(session('cart', [])) }}</span>
                         </a>
 
                         @auth
@@ -59,11 +55,7 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
                             </svg>
-                            @if(session('cart') && count(session('cart')) > 0)
-                                <span class="absolute -top-1 -right-1 bg-earth-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                                    {{ count(session('cart')) }}
-                                </span>
-                            @endif
+                            <span class="js-cart-count absolute -top-1 -right-1 bg-earth-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center {{ (session('cart') && count(session('cart')) > 0) ? '' : 'hidden' }}">{{ count(session('cart', [])) }}</span>
                         </a>
                         <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-stone-400 hover:text-stone-500 hover:bg-stone-100">
                             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -133,6 +125,92 @@
             @if(session('error'))
                 Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: @json(session('error')), showConfirmButton: false, timer: 4500, timerProgressBar: true });
             @endif
+        </script>
+
+        <script>
+        (function () {
+            const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrf = tokenMeta ? tokenMeta.getAttribute('content') : '';
+            const fmt = (n) => new Intl.NumberFormat('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n) + ' €';
+
+            function toast(message, icon) {
+                if (window.Swal) {
+                    Swal.fire({ toast: true, position: 'top-end', icon: icon || 'success', title: message, showConfirmButton: false, timer: 2500, timerProgressBar: true });
+                }
+            }
+
+            function setCartCount(count) {
+                document.querySelectorAll('.js-cart-count').forEach((el) => {
+                    el.textContent = count;
+                    el.classList.toggle('hidden', !count || count <= 0);
+                });
+            }
+
+            async function cartRequest(url, method, payload) {
+                const opts = {
+                    method: method,
+                    headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                };
+                if (payload) {
+                    opts.headers['Content-Type'] = 'application/json';
+                    opts.body = JSON.stringify(payload);
+                }
+                const res = await fetch(url, opts);
+                if (!res.ok) throw new Error('cart request failed');
+                return res.json();
+            }
+
+            // Anadir al carrito (catalogo y detalle) sin recargar
+            document.querySelectorAll('form[data-cart-add]').forEach((form) => {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const btn = form.querySelector('button[type="submit"]');
+                    if (btn) btn.disabled = true;
+                    try {
+                        const qtyEl = form.querySelector('[name="cantidad"]');
+                        const data = await cartRequest(form.action, 'POST', { cantidad: parseInt(qtyEl ? qtyEl.value : 1) || 1 });
+                        setCartCount(data.count);
+                        toast(data.message || 'Producto anadido al carrito');
+                    } catch (err) {
+                        form.submit();
+                    } finally {
+                        if (btn) btn.disabled = false;
+                    }
+                });
+            });
+
+            // Cambiar cantidad en el carrito sin recargar
+            document.querySelectorAll('input[data-cart-qty]').forEach((input) => {
+                input.addEventListener('change', async () => {
+                    let val = parseInt(input.value) || 1;
+                    if (val < 1) val = 1;
+                    input.value = val;
+                    try {
+                        const data = await cartRequest(input.dataset.updateUrl, 'PATCH', { cantidad: val });
+                        document.querySelectorAll('[data-subtotal="' + input.dataset.id + '"]').forEach((el) => { el.textContent = fmt(data.subtotal); });
+                        document.querySelectorAll('[data-cart-total]').forEach((el) => { el.textContent = fmt(data.total); });
+                        setCartCount(data.count);
+                    } catch (err) {
+                        window.location.reload();
+                    }
+                });
+            });
+
+            // Eliminar del carrito sin recargar
+            document.querySelectorAll('[data-cart-remove]').forEach((btn) => {
+                btn.addEventListener('click', async () => {
+                    try {
+                        const data = await cartRequest(btn.dataset.removeUrl, 'DELETE', null);
+                        document.querySelectorAll('[data-cart-row="' + btn.dataset.id + '"]').forEach((row) => row.remove());
+                        document.querySelectorAll('[data-cart-total]').forEach((el) => { el.textContent = fmt(data.total); });
+                        setCartCount(data.count);
+                        if (data.empty) window.location.reload();
+                    } catch (err) {
+                        window.location.reload();
+                    }
+                });
+            });
+        })();
         </script>
     </body>
 </html>

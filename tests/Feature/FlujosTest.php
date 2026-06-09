@@ -109,6 +109,54 @@ class FlujosTest extends TestCase
         Mail::assertSent(PedidoNotificacionAdmin::class);
     }
 
+    public function test_anadir_al_carrito_por_ajax_devuelve_json(): void
+    {
+        $producto = Producto::create([
+            'nombre' => 'Aceite Test',
+            'formato' => '1L botella',
+            'precio' => 10.00,
+            'disponible' => true,
+        ]);
+
+        $this->postJson('/carrito/add/'.$producto->id, ['cantidad' => 2])
+            ->assertOk()
+            ->assertJson(['count' => 1])
+            ->assertJsonStructure(['message', 'count']);
+    }
+
+    public function test_actualizar_cantidad_por_ajax_devuelve_subtotal_y_total(): void
+    {
+        $producto = Producto::create([
+            'nombre' => 'Aceite Test',
+            'formato' => '1L botella',
+            'precio' => 10.00,
+            'disponible' => true,
+        ]);
+
+        $this->withSession(['cart' => [
+            $producto->id => ['nombre' => 'Aceite Test', 'precio' => 10.00, 'formato' => '1L botella', 'cantidad' => 1],
+        ]])->patchJson('/carrito/update/'.$producto->id, ['cantidad' => 3])
+            ->assertOk()
+            ->assertJsonPath('count', 1)
+            ->assertJsonStructure(['subtotal', 'total', 'count']);
+    }
+
+    public function test_eliminar_del_carrito_por_ajax_devuelve_vacio(): void
+    {
+        $producto = Producto::create([
+            'nombre' => 'Aceite Test',
+            'formato' => '1L botella',
+            'precio' => 10.00,
+            'disponible' => true,
+        ]);
+
+        $this->withSession(['cart' => [
+            $producto->id => ['nombre' => 'Aceite Test', 'precio' => 10.00, 'formato' => '1L botella', 'cantidad' => 1],
+        ]])->deleteJson('/carrito/remove/'.$producto->id)
+            ->assertOk()
+            ->assertJson(['count' => 0, 'empty' => true]);
+    }
+
     public function test_las_paginas_del_backoffice_renderizan(): void
     {
         $user = User::factory()->create();

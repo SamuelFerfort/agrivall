@@ -28,7 +28,7 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
 
         $id = $producto->id;
-        $cantidad = $request->input('cantidad', 1);
+        $cantidad = (int) $request->input('cantidad', 1);
 
         if (isset($cart[$id])) {
             $cart[$id]['cantidad'] += $cantidad;
@@ -43,7 +43,29 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
-        return redirect()->route('cart.index')->with('success', 'Producto agregado al carrito.');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Producto agregado al carrito.',
+                'count' => $this->cartCount(),
+            ]);
+        }
+
+        return back()->with('success', 'Producto agregado al carrito.');
+    }
+
+    private function cartCount(): int
+    {
+        return count(session()->get('cart', []));
+    }
+
+    private function cartTotal(): float
+    {
+        $total = 0;
+        foreach (session()->get('cart', []) as $item) {
+            $total += $item['precio'] * $item['cantidad'];
+        }
+
+        return $total;
     }
 
     public function update(Request $request, $id)
@@ -55,14 +77,24 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
 
         if (isset($cart[$id])) {
-            $cart[$id]['cantidad'] = $request->input('cantidad');
+            $cart[$id]['cantidad'] = (int) $request->input('cantidad');
             session()->put('cart', $cart);
         }
 
-        return redirect()->route('cart.index')->with('success', 'Carrito actualizado.');
+        if ($request->expectsJson()) {
+            $subtotal = isset($cart[$id]) ? $cart[$id]['precio'] * $cart[$id]['cantidad'] : 0;
+
+            return response()->json([
+                'subtotal' => $subtotal,
+                'total' => $this->cartTotal(),
+                'count' => $this->cartCount(),
+            ]);
+        }
+
+        return back()->with('success', 'Carrito actualizado.');
     }
 
-    public function remove($id)
+    public function remove(Request $request, $id)
     {
         $cart = session()->get('cart', []);
 
@@ -71,7 +103,15 @@ class CartController extends Controller
             session()->put('cart', $cart);
         }
 
-        return redirect()->route('cart.index')->with('success', 'Producto eliminado del carrito.');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'total' => $this->cartTotal(),
+                'count' => $this->cartCount(),
+                'empty' => empty($cart),
+            ]);
+        }
+
+        return back()->with('success', 'Producto eliminado del carrito.');
     }
 
     public function checkout()

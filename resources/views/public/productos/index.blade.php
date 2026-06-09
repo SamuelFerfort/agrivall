@@ -49,7 +49,7 @@
                                     Ver detalle
                                 </a>
                                 @if($producto->disponible)
-                                    <form action="{{ route('cart.add', $producto) }}" method="POST" class="flex-1">
+                                    <form action="{{ route('cart.add', $producto) }}" method="POST" class="flex-1" data-cart-add>
                                         @csrf
                                         <input type="hidden" name="cantidad" value="1">
                                         <button type="submit" class="w-full bg-olive-700 hover:bg-olive-800 text-white font-medium py-2 px-4 rounded-lg transition duration-200 text-sm">
