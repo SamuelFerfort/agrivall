@@ -109,6 +109,26 @@ class FlujosTest extends TestCase
         Mail::assertSent(PedidoNotificacionAdmin::class);
     }
 
+    public function test_reserva_rechaza_telefono_invalido(): void
+    {
+        $semana = SemanaCasilla::create([
+            'anyo' => 2026,
+            'numero_sem' => 24,
+            'descriptor' => '8 Jun - 14 Jun',
+            'precio' => 500,
+            'estado' => 'disponible',
+        ]);
+
+        $this->from('/casa-rural')->post('/casa-rural/reservar', [
+            'semana_id' => $semana->id,
+            'nombre' => 'Test',
+            'email' => 'test@test.com',
+            'tlf' => '123',
+        ])->assertRedirect('/casa-rural')->assertSessionHasErrors('tlf');
+
+        $this->assertSame('disponible', $semana->fresh()->estado);
+    }
+
     public function test_anadir_al_carrito_por_ajax_devuelve_json(): void
     {
         $producto = Producto::create([
