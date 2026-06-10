@@ -44,20 +44,23 @@
                                 <span class="text-2xl font-bold text-olive-700">{{ number_format($producto->precio, 2, ',', '.') }} &euro;</span>
                             </div>
 
-                            <div class="flex gap-2">
-                                <a href="{{ route('productos.show', $producto) }}" class="flex-1 text-center bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium py-2 px-4 rounded-lg transition duration-200 text-sm">
+                            <div class="flex items-stretch gap-2">
+                                <a href="{{ route('productos.show', $producto) }}" class="flex-1 inline-flex items-center justify-center text-center bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium py-2 px-3 rounded-lg transition duration-200 text-sm whitespace-nowrap">
                                     Ver detalle
                                 </a>
                                 @if($producto->disponible)
                                     <form action="{{ route('cart.add', $producto) }}" method="POST" class="flex-1" data-cart-add>
                                         @csrf
                                         <input type="hidden" name="cantidad" value="1">
-                                        <button type="submit" class="w-full bg-olive-700 hover:bg-olive-800 text-white font-medium py-2 px-4 rounded-lg transition duration-200 text-sm">
-                                            Anadir al carrito
+                                        <button type="submit" class="w-full h-full inline-flex items-center justify-center gap-1.5 bg-olive-700 hover:bg-olive-800 text-white font-medium py-2 px-3 rounded-lg transition duration-200 text-sm whitespace-nowrap">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                                            </svg>
+                                            Anadir
                                         </button>
                                     </form>
                                 @else
-                                    <button disabled class="flex-1 bg-stone-300 text-stone-500 font-medium py-2 px-4 rounded-lg text-sm cursor-not-allowed">
+                                    <button disabled class="flex-1 bg-stone-300 text-stone-500 font-medium py-2 px-3 rounded-lg text-sm cursor-not-allowed whitespace-nowrap">
                                         No disponible
                                     </button>
                                 @endif
