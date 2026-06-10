@@ -23,8 +23,10 @@ class PublicCasaRuralController extends Controller
             'semana_id' => 'required|exists:semanas_casilla,id',
             'nombre' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'tlf' => 'nullable|string|max:20',
+            'tlf' => ['nullable', 'string', 'max:20', 'regex:/^(\+34\s?)?[6-9](\s?\d){8}$/'],
             'observaciones' => 'nullable|string|max:1000',
+        ], [
+            'tlf.regex' => 'Introduce un numero de telefono valido (9 digitos).',
         ]);
 
         $semana = SemanaCasilla::findOrFail($validated['semana_id']);

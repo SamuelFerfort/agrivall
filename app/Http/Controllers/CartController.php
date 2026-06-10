@@ -129,10 +129,12 @@ class CartController extends Controller
     {
         $request->validate([
             'nombre_cliente' => 'required|string|max:255',
-            'tlf_cliente' => 'required|string|max:20',
+            'tlf_cliente' => ['required', 'string', 'max:20', 'regex:/^(\+34\s?)?[6-9](\s?\d){8}$/'],
             'email_cliente' => 'required|email|max:255',
             'direccion_envio' => 'required|string|max:500',
             'metodo_pago' => 'required|in:transferencia,bizum',
+        ], [
+            'tlf_cliente.regex' => 'Introduce un numero de telefono valido (9 digitos).',
         ]);
 
         $cart = session()->get('cart', []);
