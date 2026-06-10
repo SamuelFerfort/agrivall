@@ -45,8 +45,6 @@
 
                         @auth
                             <a href="{{ route('admin.dashboard') }}" class="text-sm font-medium text-olive-700 hover:text-olive-800 transition">Admin</a>
-                        @else
-                            <a href="{{ route('login') }}" class="text-sm font-medium text-stone-500 hover:text-stone-700 transition">Iniciar Sesion</a>
                         @endauth
                     </div>
 
@@ -75,8 +73,6 @@
                     <a href="{{ route('blog.index') }}" class="block pl-3 pr-4 py-2 text-base font-medium text-stone-600 hover:bg-stone-50">Blog</a>
                     @auth
                         <a href="{{ route('admin.dashboard') }}" class="block pl-3 pr-4 py-2 text-base font-medium text-olive-700 hover:bg-stone-50">Admin</a>
-                    @else
-                        <a href="{{ route('login') }}" class="block pl-3 pr-4 py-2 text-base font-medium text-stone-600 hover:bg-stone-50">Iniciar Sesion</a>
                     @endauth
                 </div>
             </div>
@@ -113,6 +109,11 @@
                 </div>
                 <div class="border-t border-stone-700 mt-8 pt-8 text-center text-sm text-stone-500">
                     &copy; {{ date('Y') }} AGRIVALL. Todos los derechos reservados.
+                    @auth
+                        &middot; <a href="{{ route('admin.dashboard') }}" class="hover:text-stone-300 transition">Panel</a>
+                    @else
+                        &middot; <a href="{{ route('login') }}" class="hover:text-stone-300 transition">Acceso</a>
+                    @endauth
                 </div>
             </div>
         </footer>
